@@ -1,0 +1,179 @@
+
+-- XT HUB VISUAL GUI
+-- Standalone visual recreation
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "XTHub"
+gui.ResetOnSpawn = false
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local main = Instance.new("Frame")
+main.Size = UDim2.fromOffset(700, 570)
+main.Position = UDim2.new(0.5, -350, 0.5, -285)
+main.BackgroundColor3 = Color3.fromRGB(10, 9, 16)
+main.BorderSizePixel = 0
+main.Parent = gui
+
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 20)
+
+local outline = Instance.new("UIStroke", main)
+outline.Color = Color3.fromRGB(110, 70, 200)
+outline.Thickness = 1.5
+
+local function label(parent, text, pos, size, color, textSize)
+    local l = Instance.new("TextLabel")
+    l.BackgroundTransparency = 1
+    l.Position = pos
+    l.Size = size
+    l.Text = text
+    l.TextColor3 = color
+    l.TextSize = textSize
+    l.Font = Enum.Font.Gotham
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.Parent = parent
+    return l
+end
+
+local white = Color3.fromRGB(240, 235, 250)
+local muted = Color3.fromRGB(155, 145, 175)
+local purple = Color3.fromRGB(140, 85, 255)
+
+-- HEADER
+label(main, "XT HUB  |  V0.6.7",
+    UDim2.fromOffset(30, 18),
+    UDim2.fromOffset(350, 25), muted, 12)
+
+label(main, "Opening Anime Adventures",
+    UDim2.fromOffset(30, 48),
+    UDim2.fromOffset(500, 40), white, 21)
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.fromOffset(35, 35)
+close.Position = UDim2.new(1, -55, 0, 20)
+close.Text = "×"
+close.TextSize = 22
+close.TextColor3 = white
+close.BackgroundColor3 = Color3.fromRGB(35, 27, 50)
+close.Parent = main
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 9)
+
+close.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- DIVIDER
+local divider = Instance.new("Frame")
+divider.Position = UDim2.fromOffset(0, 105)
+divider.Size = UDim2.new(1, 0, 0, 1)
+divider.BackgroundColor3 = Color3.fromRGB(55, 43, 75)
+divider.BorderSizePixel = 0
+divider.Parent = main
+
+-- PROGRESS
+label(main, "LOADING PROGRESS",
+    UDim2.fromOffset(30, 130),
+    UDim2.fromOffset(300, 25), muted, 11)
+
+local bar = Instance.new("Frame")
+bar.Position = UDim2.fromOffset(30, 165)
+bar.Size = UDim2.new(1, -60, 0, 13)
+bar.BackgroundColor3 = Color3.fromRGB(35, 30, 48)
+bar.BorderSizePixel = 0
+bar.Parent = main
+Instance.new("UICorner", bar).CornerRadius = UDim.new(1, 0)
+
+local fill = Instance.new("Frame")
+fill.Size = UDim2.new(0, 0, 1, 0)
+fill.BackgroundColor3 = purple
+fill.BorderSizePixel = 0
+fill.Parent = bar
+Instance.new("UICorner", fill).CornerRadius = UDim.new(1, 0)
+
+local progress = label(main, "Initializing...",
+    UDim2.fromOffset(30, 190),
+    UDim2.fromOffset(400, 25), muted, 12)
+
+-- ACTIVITY
+label(main, "ACTIVITY",
+    UDim2.fromOffset(30, 230),
+    UDim2.fromOffset(300, 25), muted, 11)
+
+local panel = Instance.new("Frame")
+panel.Position = UDim2.fromOffset(30, 265)
+panel.Size = UDim2.new(1, -60, 0, 180)
+panel.BackgroundColor3 = Color3.fromRGB(19, 17, 28)
+panel.BorderSizePixel = 0
+panel.Parent = main
+Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 12)
+
+local logs = label(panel,
+    "[+] XT HUB initialized\n\n[+] Interface loaded\n\n[+] Character status: Ready\n\n[+] Preparing visual assets...",
+    UDim2.fromOffset(18, 15),
+    UDim2.new(1, -36, 1, -30),
+    Color3.fromRGB(190, 180, 210), 12)
+
+logs.Font = Enum.Font.Code
+logs.TextYAlignment = Enum.TextYAlignment.Top
+
+-- COMMUNITY
+label(main, "XT HUB COMMUNITY",
+    UDim2.fromOffset(30, 465),
+    UDim2.fromOffset(300, 20), muted, 11)
+
+local community = Instance.new("TextButton")
+community.Position = UDim2.fromOffset(30, 495)
+community.Size = UDim2.new(1, -60, 0, 45)
+community.BackgroundColor3 = Color3.fromRGB(75, 45, 140)
+community.Text = "XT HUB COMMUNITY"
+community.TextColor3 = white
+community.TextSize = 13
+community.Font = Enum.Font.GothamBold
+community.Parent = main
+Instance.new("UICorner", community).CornerRadius = UDim.new(0, 10)
+
+-- PROGRESS ANIMATION
+task.spawn(function()
+    for i = 1, 100 do
+        fill.Size = UDim2.new(i / 100, 0, 1, 0)
+        progress.Text = "Visual loading... " .. i .. "%"
+        task.wait(0.04)
+    end
+
+    progress.Text = "Visual interface ready!"
+    logs.Text = "[+] XT HUB initialized\n\n[+] Interface loaded\n\n[+] Character status: Ready\n\n[+] Visual interface ready!"
+end)
+
+-- DRAG WINDOW
+local dragging = false
+local dragStart
+local startPos
+
+main.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
